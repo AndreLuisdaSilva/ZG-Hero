@@ -1,4 +1,4 @@
-package com.example.demo.exerciciosjava.KTO.controller;
+package com.example.demo.exerciciosjava.K1T3Java.controller;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -6,8 +6,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
-import com.example.demo.exerciciosjava.KTO.model.Tarefa;
-import com.example.demo.exerciciosjava.KTO.service.GerenciadorDeTarefas;
+import com.example.demo.exerciciosjava.K1T3Java.model.Tarefa;
+import com.example.demo.exerciciosjava.K1T3Java.service.GerenciadorDeTarefas;
 
 public class TarefaController {
 
@@ -16,6 +16,7 @@ public class TarefaController {
 
     public TarefaController() {
         this.gerenciador = new GerenciadorDeTarefas();
+        this.gerenciador.carregarDoArquivo();
         this.scanner = new Scanner(System.in);
     }
 
@@ -52,11 +53,11 @@ public class TarefaController {
     private int lerOpcao() {
         while (!scanner.hasNextInt()) {
             System.out.println("Opção inválida. Digite um número.");
-            scanner.next(); // Limpa a entrada inválida
+            scanner.next();
             System.out.print("Escolha uma opção: ");
         }
         int opcao = scanner.nextInt();
-        scanner.nextLine(); // Consumir a quebra de linha após o número
+        scanner.nextLine();
         return opcao;
     }
 
@@ -104,7 +105,7 @@ public class TarefaController {
         boolean dataValida = false;
 
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-        
+
         while (!dataValida) {
             System.out.print("Data de término (DD/MM/YYYY): ");
             String dataString = scanner.nextLine();
@@ -112,7 +113,7 @@ public class TarefaController {
                 dataTermino = LocalDate.parse(dataString, formatter);
                 dataValida = true;
             } catch (DateTimeParseException e) {
-                System.out.println("Formato de data inválido. Use DD-MM-YYYY.");
+                System.out.println("Formato de data inválido. Use DD/MM/YYYY.");
             }
         }
 
@@ -126,14 +127,13 @@ public class TarefaController {
                 System.out.print("Nível de Prioridade (1-5): ");
             }
             prioridade = scanner.nextInt();
-            scanner.nextLine(); // Consumir a quebra de linha
+            scanner.nextLine();
             if (prioridade >= 1 && prioridade <= 5) {
                 prioridadeValida = true;
             } else {
                 System.out.println("Prioridade inválida. Digite um número de 1 a 5.");
             }
         }
-
 
         System.out.print("Categoria: ");
         String categoria = scanner.nextLine();
@@ -151,9 +151,9 @@ public class TarefaController {
             }
         }
 
-
         Tarefa novaTarefa = new Tarefa(nome, descricao, dataTermino, prioridade, categoria, status);
         gerenciador.adiciona(novaTarefa);
+        gerenciador.gravarNoArquivo(gerenciador.getListaTarefas());
         System.out.println("Tarefa adicionada com sucesso!");
     }
 
@@ -164,7 +164,7 @@ public class TarefaController {
             System.out.println("Nenhuma tarefa cadastrada.");
         } else {
             for (Tarefa tarefa : tarefas) {
-                System.out.println(tarefa); // Usa o método toString da classe Tarefa
+                System.out.println(tarefa);
             }
         }
     }
@@ -189,13 +189,13 @@ public class TarefaController {
         boolean prioridadeValida = false;
         while (!prioridadeValida) {
             System.out.print("Digite o nível de prioridade (1-5) para filtrar: ");
-             while (!scanner.hasNextInt()) {
+            while (!scanner.hasNextInt()) {
                 System.out.println("Entrada inválida. Digite um número de 1 a 5.");
                 scanner.next();
                 System.out.print("Digite o nível de prioridade (1-5) para filtrar: ");
             }
             prioridade = scanner.nextInt();
-            scanner.nextLine(); // Consumir a quebra de linha
+            scanner.nextLine();
             if (prioridade >= 1 && prioridade <= 5) {
                 prioridadeValida = true;
             } else {
@@ -219,10 +219,10 @@ public class TarefaController {
         if (tarefas.isEmpty()) {
             System.out.println("Nenhuma tarefa cadastrada.");
         } else {
-                for (Tarefa tarefa : tarefas){
-                    System.out.println(tarefa);
-                }
+            for (Tarefa tarefa : tarefas) {
+                System.out.println(tarefa);
             }
+        }
     }
 
     private void listarTarefasPorStatus() {

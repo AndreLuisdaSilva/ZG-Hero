@@ -1,4 +1,4 @@
-package com.example.demo.exerciciosjava.KTO.model;
+package com.example.demo.exerciciosjava.K1T3Java.model;
 
 import java.time.LocalDate;
 
@@ -10,11 +10,12 @@ public class Tarefa {
     private String categoria;
     private Status status;
 
-    public enum Status{
+    public enum Status {
         TODO, DOING, DONE;
     }
 
-    public Tarefa(String nome, String descricao, LocalDate dataTermino, int nivelPrioridade, String categoria, Status status) {
+    public Tarefa(String nome, String descricao, LocalDate dataTermino, int nivelPrioridade, String categoria,
+            Status status) {
         this.nome = nome;
         this.descricao = descricao;
         this.dataTermino = dataTermino;
@@ -23,8 +24,7 @@ public class Tarefa {
         this.status = status;
     }
 
-     // Getters
-     public String getNome() {
+    public String getNome() {
         return nome;
     }
 
@@ -44,12 +44,10 @@ public class Tarefa {
         return categoria;
     }
 
-    public Status getStatus(){
+    public Status getStatus() {
         return status;
     }
 
-
-    //Setters
     public void setNome(String nome) {
         this.nome = nome;
     }
@@ -70,19 +68,17 @@ public class Tarefa {
         this.categoria = categoria;
     }
 
-    public void setStatus(Status status){
+    public void setStatus(Status status) {
         this.status = status;
     }
 
-     @Override
-     public String toString() {
-         return "Tarefa{" +
-                "nome='" + nome + '\'' +
-                ", descricao='" + descricao + '\'' +
-                ", dataTermino=" + dataTermino +
-                ", nivelPrioridade=" + nivelPrioridade +
-                ", categoria='" + categoria + '\'' +
-                ", status=" + status +
-                '}';
-     }
+    @Override
+    public String toString() {
+        return "nome:" + nome +
+                ", descricao:" + descricao +
+                ", dataTermino:" + dataTermino +
+                ", nivelPrioridade:" + nivelPrioridade +
+                ", categoria:" + categoria +
+                ", status:" + status;
+    }
 }

@@ -24,6 +24,9 @@ Cada tarefa possui os seguintes atributos:
   - Status  
 - Rebalanceamento automático da ordem:
   - Ao inserir uma nova tarefa, o sistema reorganiza de acordo com sua prioridade.  
+- **Alarme de Tarefas:**
+  - **Adicionar Alarme:** Agora é possível adicionar um alarme a uma tarefa, definindo com quantas horas de antecedência o aviso deve ser disparado.
+  - **Notificação:** Ao iniciar a aplicação, o sistema verifica as tarefas com alarme e exibe uma notificação para aquelas que estão próximas do prazo de término.
 
 Atenção:  
 O projeto deve ser implementado apenas em Java, sem uso de frameworks como Spring, Micronaut ou Grails.  
@@ -45,16 +48,27 @@ Funcionalidades extras que podem ser implementadas:
 
 1. Compile o projeto:
    ```bash
-   javac Main.java
-Execute:
+   javac com/example/demo/exerciciosjava/K1T3Java/controller/TarefaController.java
+   ```
+2. Execute o programa:
+   ```bash
+   java com.example.demo.exerciciosjava.K1T3Java.controller.TarefaController
+   ```
 
-
-java Main
-Estrutura do Projeto (sugestão)
-```bash
+## Estrutura do Projeto
+```
 /src
- ├── Main.java        # Classe principal (menu do programa)
- ├── Task.java        # Classe que representa uma tarefa
- ├── TaskManager.java # Classe responsável por gerenciar tarefas
- └── utils/           # Utilitários (ex: persistência em arquivo)
- ´´´
+└── main
+    └── java
+        └── com
+            └── example
+                └── demo
+                    └── exerciciosjava
+                        └── K1T3Java
+                            ├── controller
+                            │   └── TarefaController.java
+                            ├── model
+                            │   └── Tarefa.java
+                            └── service
+                                └── GerenciadorDeTarefas.java
+```

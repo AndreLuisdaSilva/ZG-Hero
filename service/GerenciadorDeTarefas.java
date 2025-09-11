@@ -9,7 +9,8 @@ import com.example.demo.exerciciosjava.K1T3Java.model.Tarefa.Status;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Comparator;
@@ -81,13 +82,15 @@ public class GerenciadorDeTarefas {
         try {
             String[] paresAtributoValor = linha.split(",");
 
-            if (paresAtributoValor.length >= 6) {
+            if (paresAtributoValor.length >= 8) {
                 String nome = null;
                 String descricao = null;
-                LocalDate dataTermino = null;
+                LocalDateTime dataTermino = null;
                 int nivelPrioridade = 0;
                 String categoria = null;
                 Tarefa.Status status = null;
+                boolean alarme = false;
+                int antecedenciaAlarmeHoras = 0;
 
                 for (String par : paresAtributoValor) {
                     String[] partes = par.split(":");
@@ -106,7 +109,7 @@ public class GerenciadorDeTarefas {
                             case "dataTermino":
                                 if (!valorAtributo.equalsIgnoreCase("null")) {
                                     try {
-                                        dataTermino = LocalDate.parse(valorAtributo);
+                                        dataTermino = LocalDateTime.parse(valorAtributo);
                                     } catch (DateTimeParseException e) {
                                         System.err.println(
                                                 "Erro ao parsear data '" + valorAtributo + "' na linha: " + linha);
@@ -132,6 +135,12 @@ public class GerenciadorDeTarefas {
                                             "Erro ao parsear status '" + valorAtributo + "' na linha: " + linha);
                                 }
                                 break;
+                            case "alarme":
+                                alarme = Boolean.parseBoolean(valorAtributo);
+                                break;
+                            case "antecedenciaAlarmeHoras":
+                                antecedenciaAlarmeHoras = Integer.parseInt(valorAtributo);
+                                break;
                             default:
                                 System.err.println("Atributo desconhecido encontrado na linha: " + nomeAtributo);
                         }
@@ -141,7 +150,7 @@ public class GerenciadorDeTarefas {
                 }
                 if (nome != null && descricao != null && categoria != null && status != null && nivelPrioridade >= 1
                         && nivelPrioridade <= 5) {
-                    return new Tarefa(nome, descricao, dataTermino, nivelPrioridade, categoria, status);
+                    return new Tarefa(nome, descricao, dataTermino, nivelPrioridade, categoria, status, alarme, antecedenciaAlarmeHoras);
                 } else {
                     System.err.println("Não foi possível extrair todos os campos obrigatórios da linha: " + linha);
                     return null;
@@ -161,6 +170,87 @@ public class GerenciadorDeTarefas {
 
     public List<Tarefa> getListaTarefas() {
         return listaTarefas;
+    }
+
+    public <T> boolean setListaTarefas(String nomeTarefa, int escolha, T novoValor) {
+        for(Tarefa tarefa : listaTarefas){
+            if(tarefa.getNome().equalsIgnoreCase(nomeTarefa)){
+                System.out.print("Nova categoria: ");
+
+                switch (escolha) {
+                    case 1:
+                        if(novoValor instanceof String){
+                            tarefa.setNome((String)novoValor);
+                            break;
+                        }else {
+                            System.out.println("Valor inválido para Nome.");
+                            return false;
+                        }
+                    case 2:
+                        if(novoValor instanceof String){
+                            tarefa.setDescricao((String)novoValor);
+                            break;}
+                        else {
+                            System.out.println("Valor inválido para Descricao.");
+                            return false;
+                        }
+                    case 3:
+                        if (novoValor instanceof String) {
+                            tarefa.setCategoria((String)novoValor);
+                            break;}
+                        else {
+                            System.out.println("Valor inválido para Categoria.");
+                            return false;
+                        }
+                    case 4:
+                        if(novoValor instanceof String){
+                            tarefa.setStatus(Tarefa.Status.valueOf(((String) novoValor).toUpperCase()));
+                            break;
+                        }else {
+                            System.out.println("Valor inválido para Status.");
+                            return false;
+                        }
+                    case 5:
+                        if(novoValor instanceof Integer){
+                            tarefa.setNivelPrioridade((Integer)novoValor);
+                            break;
+                        }else {
+                            System.out.println("Valor inválido para Prioridade.");
+                            return false;
+                        }
+                    case 6:
+                        if(novoValor instanceof String){
+                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
+                            tarefa.setDataTermino(LocalDateTime.parse((String) novoValor, formatter));
+                            break;
+                        }else {
+                            System.out.println("Valor inválido para DataTermino.");
+                            return false;
+                        }
+                    case 7:
+                        if(novoValor instanceof Boolean){
+                            tarefa.setAlarme((Boolean)novoValor);
+                            break;
+                        }else {
+                            System.out.println("Valor inválido para Alarme.");
+                            return false;
+                        }
+                    case 8:
+                        if(novoValor instanceof Integer){
+                            tarefa.setAntecedenciaAlarmeHoras((Integer)novoValor);
+                            break;
+                        }else {
+                            System.out.println("Valor inválido para Antecedencia.");
+                            return false;
+                        }
+                    default:
+                        System.out.println("Opção inválida.");
+                        return false;
+                }
+                return true;
+            }
+        }
+        return false;
     }
 
     public boolean excluirTarefa(String nomeTarefa) {
@@ -243,5 +333,17 @@ public class GerenciadorDeTarefas {
         listaTarefas.sort(comparator);
 
         return listaTarefas;
+    }
+
+    public void verificarAlarmes() {
+        LocalDateTime agora = LocalDateTime.now();
+        for (Tarefa tarefa : listaTarefas) {
+            if (tarefa.isAlarme()) {
+                LocalDateTime dataAlarme = tarefa.getDataTermino().minusHours(tarefa.getAntecedenciaAlarmeHoras());
+                if (agora.isAfter(dataAlarme) && agora.isBefore(tarefa.getDataTermino())) {
+                    System.out.println("Alarme: A tarefa '" + tarefa.getNome() + "' está próxima do fim!");
+                }
+            }
+        }
     }
 }

@@ -1,27 +1,39 @@
 package com.example.demo.exerciciosjava.K1T3Java.model;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class Tarefa {
     private String nome;
     private String descricao;
-    private LocalDate dataTermino;
+    private LocalDateTime dataTermino;
     private int nivelPrioridade;
     private String categoria;
     private Status status;
+    private boolean alarme;
+    private int antecedenciaAlarmeHoras;
 
     public enum Status {
         TODO, DOING, DONE;
     }
 
-    public Tarefa(String nome, String descricao, LocalDate dataTermino, int nivelPrioridade, String categoria,
-            Status status) {
+    public Tarefa(String nome, String descricao, LocalDateTime dataTermino, int nivelPrioridade, String categoria,
+            Status status, Boolean alarme, int antecedenciaAlarmeHoras) {
         this.nome = nome;
         this.descricao = descricao;
         this.dataTermino = dataTermino;
         this.nivelPrioridade = nivelPrioridade;
         this.categoria = categoria;
         this.status = status;
+        this.alarme = alarme;
+        this.antecedenciaAlarmeHoras = antecedenciaAlarmeHoras;
+    }
+
+    public int getAntecedenciaAlarmeHoras() {
+        return antecedenciaAlarmeHoras;
+    }
+
+    public boolean isAlarme() {
+        return alarme;
     }
 
     public String getNome() {
@@ -32,7 +44,7 @@ public class Tarefa {
         return descricao;
     }
 
-    public LocalDate getDataTermino() {
+    public LocalDateTime getDataTermino() {
         return dataTermino;
     }
 
@@ -56,7 +68,7 @@ public class Tarefa {
         this.descricao = descricao;
     }
 
-    public void setDataTermino(LocalDate dataTermino) {
+    public void setDataTermino(LocalDateTime dataTermino) {
         this.dataTermino = dataTermino;
     }
 
@@ -72,6 +84,14 @@ public class Tarefa {
         this.status = status;
     }
 
+    public void setAlarme(boolean alarme) {
+        this.alarme = alarme;
+    }
+
+    public void setAntecedenciaAlarmeHoras(int antecedenciaAlarmeHoras) {
+        this.antecedenciaAlarmeHoras = antecedenciaAlarmeHoras;
+    }
+
     @Override
     public String toString() {
         return "nome:" + nome +
@@ -79,6 +99,8 @@ public class Tarefa {
                 ", dataTermino:" + dataTermino +
                 ", nivelPrioridade:" + nivelPrioridade +
                 ", categoria:" + categoria +
-                ", status:" + status;
+                ", status:" + status +
+                ", alarme:" + alarme +
+                ", antecedenciaAlarmeHoras:" + antecedenciaAlarmeHoras;
     }
 }

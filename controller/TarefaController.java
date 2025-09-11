@@ -1,6 +1,6 @@
 package com.example.demo.exerciciosjava.K1T3Java.controller;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -14,10 +14,14 @@ public class TarefaController {
     private GerenciadorDeTarefas gerenciador;
     private Scanner scanner;
 
-    public TarefaController() {
-        this.gerenciador = new GerenciadorDeTarefas();
+    public TarefaController(GerenciadorDeTarefas gerenciador) {
+        this.gerenciador = gerenciador;
         this.gerenciador.carregarDoArquivo();
         this.scanner = new Scanner(System.in);
+    }
+
+    public TarefaController() {
+        this(new GerenciadorDeTarefas());
     }
 
     public static void main(String[] args) {
@@ -26,6 +30,7 @@ public class TarefaController {
     }
 
     public void iniciar() {
+        gerenciador.verificarAlarmes();
         int opcao;
         do {
             exibirMenu();
@@ -45,7 +50,8 @@ public class TarefaController {
         System.out.println("4. Listar Tarefas por Prioridade");
         System.out.println("5. Listar Tarefas por Prioridade em Ordem Decrecente");
         System.out.println("6. Listar Tarefas por Status");
-        System.out.println("7. Excluir Tarefa");
+        System.out.println("7. Editar Tarefa");
+        System.out.println("8. Excluir Tarefa");
         System.out.println("0. Sair");
         System.out.print("Escolha uma opção: ");
     }
@@ -82,6 +88,9 @@ public class TarefaController {
                 listarTarefasPorStatus();
                 break;
             case 7:
+                editarTarefa();
+                break;
+            case 8:
                 excluirTarefa();
                 break;
             case 0:
@@ -101,19 +110,19 @@ public class TarefaController {
         System.out.print("Descrição: ");
         String descricao = scanner.nextLine();
 
-        LocalDate dataTermino = null;
+        LocalDateTime dataTermino = null;
         boolean dataValida = false;
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
         while (!dataValida) {
-            System.out.print("Data de término (DD/MM/YYYY): ");
+            System.out.print("Data de término (DD/MM/YYYY HH:mm): ");
             String dataString = scanner.nextLine();
             try {
-                dataTermino = LocalDate.parse(dataString, formatter);
+                dataTermino = LocalDateTime.parse(dataString, formatter);
                 dataValida = true;
             } catch (DateTimeParseException e) {
-                System.out.println("Formato de data inválido. Use DD/MM/YYYY.");
+                System.out.println("Formato de data inválido. Use DD/MM/YYYY HH:mm.");
             }
         }
 
@@ -151,7 +160,17 @@ public class TarefaController {
             }
         }
 
-        Tarefa novaTarefa = new Tarefa(nome, descricao, dataTermino, prioridade, categoria, status);
+        System.out.print("Deseja adicionar um alarme para esta tarefa? (S/N): ");
+        String respostaAlarme = scanner.nextLine();
+        boolean alarme = respostaAlarme.equalsIgnoreCase("S");
+        int antecedenciaAlarmeHoras = 0;
+        if (alarme) {
+            System.out.print("Com quantas horas de antecedência deseja ser notificado? ");
+            antecedenciaAlarmeHoras = scanner.nextInt();
+            scanner.nextLine();
+        }
+
+        Tarefa novaTarefa = new Tarefa(nome, descricao, dataTermino, prioridade, categoria, status, alarme, antecedenciaAlarmeHoras);
         gerenciador.adiciona(novaTarefa);
         gerenciador.gravarNoArquivo(gerenciador.getListaTarefas());
         System.out.println("Tarefa adicionada com sucesso!");
@@ -248,6 +267,36 @@ public class TarefaController {
                 System.out.println(tarefa);
             }
         }
+    }
+
+    private void editarTarefa() {
+        System.out.println("\n--- Editar Tarefa ---");
+        System.out.print("Digite o nome da tarefa a ser editada: ");
+        String nomeTarefa = scanner.nextLine();
+
+        System.out.println("Escolha o campo que deseja alterar:");
+        System.out.println("1 - Nome");
+        System.out.println("2 - Descrição");
+        System.out.println("3 - Categoria");
+        System.out.println("4 - Status");
+        System.out.println("5 - Prioridade");
+        System.out.println("6 - Data de Término");
+        System.out.println("7 - Alarme");
+        System.out.println("8 - Antecedência do Alarme");
+        int escolha = scanner.nextInt();
+        scanner.nextLine();
+
+        System.out.println("Digite o novo valor:");
+        String novoValor = scanner.nextLine();
+
+        boolean editada = gerenciador.setListaTarefas(nomeTarefa, escolha, novoValor);
+
+        if (editada) {
+            System.out.println("Tarefa '" + nomeTarefa + "' editada com sucesso!");
+        } else {
+            System.out.println("Tarefa '" + nomeTarefa + "' não encontrada.");
+        }
+
     }
 
     private void excluirTarefa() {

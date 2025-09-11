@@ -82,83 +82,75 @@ public class GerenciadorDeTarefas {
         try {
             String[] paresAtributoValor = linha.split(",");
 
-            if (paresAtributoValor.length >= 8) {
-                String nome = null;
-                String descricao = null;
-                LocalDateTime dataTermino = null;
-                int nivelPrioridade = 0;
-                String categoria = null;
-                Tarefa.Status status = null;
-                boolean alarme = false;
-                int antecedenciaAlarmeHoras = 0;
+            String nome = null;
+            String descricao = null;
+            LocalDateTime dataTermino = null;
+            int nivelPrioridade = 0;
+            String categoria = null;
+            Tarefa.Status status = null;
+            boolean alarme = false;
+            int antecedenciaAlarmeHoras = 0;
 
-                for (String par : paresAtributoValor) {
-                    String[] partes = par.split(":");
+            for (String par : paresAtributoValor) {
+                int indexSeparador = par.indexOf(':');
+                if (indexSeparador != -1) {
+                    String nomeAtributo = par.substring(0, indexSeparador).trim();
+                    String valorAtributo = par.substring(indexSeparador + 1).trim();
 
-                    if (partes.length == 2) {
-                        String nomeAtributo = partes[0].trim();
-                        String valorAtributo = partes[1].trim();
-
-                        switch (nomeAtributo) {
-                            case "nome":
-                                nome = valorAtributo;
-                                break;
-                            case "descricao":
-                                descricao = valorAtributo;
-                                break;
-                            case "dataTermino":
-                                if (!valorAtributo.equalsIgnoreCase("null")) {
-                                    try {
-                                        dataTermino = LocalDateTime.parse(valorAtributo);
-                                    } catch (DateTimeParseException e) {
-                                        System.err.println(
-                                                "Erro ao parsear data '" + valorAtributo + "' na linha: " + linha);
-                                    }
-                                }
-                                break;
-                            case "nivelPrioridade":
+                    switch (nomeAtributo) {
+                        case "nome":
+                            nome = valorAtributo;
+                            break;
+                        case "descricao":
+                            descricao = valorAtributo;
+                            break;
+                        case "dataTermino":
+                            if (!valorAtributo.equalsIgnoreCase("null")) {
                                 try {
-                                    nivelPrioridade = Integer.parseInt(valorAtributo);
-                                } catch (NumberFormatException e) {
+                                    dataTermino = LocalDateTime.parse(valorAtributo);
+                                } catch (DateTimeParseException e) {
                                     System.err.println(
-                                            "Erro ao parsear prioridade '" + valorAtributo + "' na linha: " + linha);
+                                            "Erro ao parsear data '" + valorAtributo + "' na linha: " + linha);
                                 }
-                                break;
-                            case "categoria":
-                                categoria = valorAtributo;
-                                break;
-                            case "status":
-                                try {
-                                    status = Tarefa.Status.valueOf(valorAtributo);
-                                } catch (IllegalArgumentException e) {
-                                    System.err.println(
-                                            "Erro ao parsear status '" + valorAtributo + "' na linha: " + linha);
-                                }
-                                break;
-                            case "alarme":
-                                alarme = Boolean.parseBoolean(valorAtributo);
-                                break;
-                            case "antecedenciaAlarmeHoras":
-                                antecedenciaAlarmeHoras = Integer.parseInt(valorAtributo);
-                                break;
-                            default:
-                                System.err.println("Atributo desconhecido encontrado na linha: " + nomeAtributo);
-                        }
-                    } else {
-                        System.err.println("Formato inválido para par atributo:valor na linha: " + par);
+                            }
+                            break;
+                        case "nivelPrioridade":
+                            try {
+                                nivelPrioridade = Integer.parseInt(valorAtributo);
+                            } catch (NumberFormatException e) {
+                                System.err.println(
+                                        "Erro ao parsear prioridade '" + valorAtributo + "' na linha: " + linha);
+                            }
+                            break;
+                        case "categoria":
+                            categoria = valorAtributo;
+                            break;
+                        case "status":
+                            try {
+                                status = Tarefa.Status.valueOf(valorAtributo);
+                            } catch (IllegalArgumentException e) {
+                                System.err.println(
+                                        "Erro ao parsear status '" + valorAtributo + "' na linha: " + linha);
+                            }
+                            break;
+                        case "alarme":
+                            alarme = Boolean.parseBoolean(valorAtributo);
+                            break;
+                        case "antecedenciaAlarmeHoras":
+                            antecedenciaAlarmeHoras = Integer.parseInt(valorAtributo);
+                            break;
+                        default:
+                            System.err.println("Atributo desconhecido encontrado na linha: " + nomeAtributo);
                     }
-                }
-                if (nome != null && descricao != null && categoria != null && status != null && nivelPrioridade >= 1
-                        && nivelPrioridade <= 5) {
-                    return new Tarefa(nome, descricao, dataTermino, nivelPrioridade, categoria, status, alarme, antecedenciaAlarmeHoras);
                 } else {
-                    System.err.println("Não foi possível extrair todos os campos obrigatórios da linha: " + linha);
-                    return null;
+                    System.err.println("Formato inválido para par atributo:valor na linha: " + par);
                 }
-
+            }
+            if (nome != null && descricao != null && categoria != null && status != null && nivelPrioridade >= 1
+                    && nivelPrioridade <= 5) {
+                return new Tarefa(nome, descricao, dataTermino, nivelPrioridade, categoria, status, alarme, antecedenciaAlarmeHoras);
             } else {
-                System.err.println(
-                        "Linha com formato inválido ou incompleto (número insuficiente de atributos): " + linha);
+                System.err.println("Não foi possível extrair todos os campos obrigatórios da linha: " + linha);
                 return null;
             }
 
@@ -338,7 +330,7 @@ public class GerenciadorDeTarefas {
     public void verificarAlarmes() {
         LocalDateTime agora = LocalDateTime.now();
         for (Tarefa tarefa : listaTarefas) {
-            if (tarefa.isAlarme()) {
+            if (tarefa.isAlarme() && tarefa.getDataTermino() != null) {
                 LocalDateTime dataAlarme = tarefa.getDataTermino().minusHours(tarefa.getAntecedenciaAlarmeHoras());
                 if (agora.isAfter(dataAlarme) && agora.isBefore(tarefa.getDataTermino())) {
                     System.out.println("Alarme: A tarefa '" + tarefa.getNome() + "' está próxima do fim!");

@@ -290,7 +290,7 @@ public class TarefaController {
         String novoValor = scanner.nextLine();
 
         boolean editada = gerenciador.setListaTarefas(nomeTarefa, escolha, novoValor);
-
+        gerenciador.gravarNoArquivo(gerenciador.getListaTarefas());
         if (editada) {
             System.out.println("Tarefa '" + nomeTarefa + "' editada com sucesso!");
         } else {

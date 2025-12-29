@@ -2,6 +2,7 @@
 package com.example.demo.exerciciosjava.K1T3Java.test.java.com.example.demo.exerciciosjava.K1T3Java.service;
 
 import com.example.demo.exerciciosjava.K1T3Java.model.Tarefa;
+import com.example.demo.exerciciosjava.K1T3Java.service.GerenciadorDeTarefas;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -54,22 +55,6 @@ public class GerenciadorDeTarefasTest {
         assertEquals(1, tarefas.size());
         assertEquals(tarefa2, tarefas.get(0));
         System.out.println(">> excluída com sucesso!");
-    }
-
-    @Test
-    public void testeAtualizarTarefa() {
-        // Given
-        gerenciador.adiciona(tarefa1);
-        String novoNome = "Tarefa Atualizada";
-        System.out.println("Teste de atualização de tarefa: Atualizando nome da Tarefa 1 para >> " + novoNome);
-
-        // When
-        boolean atualizado = gerenciador.setListaTarefas(tarefa1.getNome(), 1, novoNome);
-
-        // Then
-        assertTrue(atualizado);
-        assertEquals(novoNome, gerenciador.getListaTarefas().get(0).getNome());
-        System.out.println(">> atualizada com sucesso!");
     }
 
     @Test

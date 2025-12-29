@@ -164,81 +164,10 @@ public class GerenciadorDeTarefas {
         return listaTarefas;
     }
 
-    public <T> boolean setListaTarefas(String nomeTarefa, int escolha, T novoValor) {
-        for(Tarefa tarefa : listaTarefas){
-            if(tarefa.getNome().equalsIgnoreCase(nomeTarefa)){
-                System.out.print("Nova categoria: ");
-
-                switch (escolha) {
-                    case 1:
-                        if(novoValor instanceof String){
-                            tarefa.setNome((String)novoValor);
-                            break;
-                        }else {
-                            System.out.println("Valor inválido para Nome.");
-                            return false;
-                        }
-                    case 2:
-                        if(novoValor instanceof String){
-                            tarefa.setDescricao((String)novoValor);
-                            break;}
-                        else {
-                            System.out.println("Valor inválido para Descricao.");
-                            return false;
-                        }
-                    case 3:
-                        if (novoValor instanceof String) {
-                            tarefa.setCategoria((String)novoValor);
-                            break;}
-                        else {
-                            System.out.println("Valor inválido para Categoria.");
-                            return false;
-                        }
-                    case 4:
-                        if(novoValor instanceof String){
-                            tarefa.setStatus(Tarefa.Status.valueOf(((String) novoValor).toUpperCase()));
-                            break;
-                        }else {
-                            System.out.println("Valor inválido para Status.");
-                            return false;
-                        }
-                    case 5:
-                        if(novoValor instanceof Integer){
-                            tarefa.setNivelPrioridade((Integer)novoValor);
-                            break;
-                        }else {
-                            System.out.println("Valor inválido para Prioridade.");
-                            return false;
-                        }
-                    case 6:
-                        if(novoValor instanceof String){
-                            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
-                            tarefa.setDataTermino(LocalDateTime.parse((String) novoValor, formatter));
-                            break;
-                        }else {
-                            System.out.println("Valor inválido para DataTermino.");
-                            return false;
-                        }
-                    case 7:
-                        if(novoValor instanceof Boolean){
-                            tarefa.setAlarme((Boolean)novoValor);
-                            break;
-                        }else {
-                            System.out.println("Valor inválido para Alarme.");
-                            return false;
-                        }
-                    case 8:
-                        if(novoValor instanceof Integer){
-                            tarefa.setAntecedenciaAlarmeHoras((Integer)novoValor);
-                            break;
-                        }else {
-                            System.out.println("Valor inválido para Antecedencia.");
-                            return false;
-                        }
-                    default:
-                        System.out.println("Opção inválida.");
-                        return false;
-                }
+    public boolean atualizarTarefa(String nomeTarefa, Tarefa novaTarefa) {
+        for (int i = 0; i < listaTarefas.size(); i++) {
+            if (listaTarefas.get(i).getNome().equalsIgnoreCase(nomeTarefa)) {
+                listaTarefas.set(i, novaTarefa);
                 return true;
             }
         }
@@ -333,7 +262,9 @@ public class GerenciadorDeTarefas {
             if (tarefa.isAlarme() && tarefa.getDataTermino() != null) {
                 LocalDateTime dataAlarme = tarefa.getDataTermino().minusHours(tarefa.getAntecedenciaAlarmeHoras());
                 if (agora.isAfter(dataAlarme) && agora.isBefore(tarefa.getDataTermino())) {
+                    System.out.println("--------------------------------Alarme--------------------------------");
                     System.out.println("Alarme: A tarefa '" + tarefa.getNome() + "' está próxima do fim!");
+                    System.out.println("--------------------------------------------------------------------");
                 }
             }
         }
